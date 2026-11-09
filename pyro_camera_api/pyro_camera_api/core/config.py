@@ -66,7 +66,11 @@ if RAW_CONFIG:
         id_or_name = cfg.get("streamid") or cfg.get("stream_name") or cfg.get("name", "stream")
         adapter = (cfg.get("adapter") or cfg.get("brand") or "").lower()
 
-        if "linovision" in adapter:
+        if "onvif" in adapter:
+            # Default is the Hikvision sub stream, override with rtsp_path for other vendors
+            path = cfg.get("rtsp_path", "/Streaming/Channels/102")
+            input_url = f"rtsp://{USER_ENC}:{PWD_ENC}@{ip}:{cfg.get('rtsp_port', 554)}{path}"
+        elif "linovision" in adapter:
             channel = str(cfg.get("rtsp_channel", cfg.get("channel", "102")))
             path = cfg.get("rtsp_path", f"/Streaming/Channels/{channel}")
             input_url = f"rtsp://{USER_ENC}:{PWD_ENC}@{ip}:554{path}"

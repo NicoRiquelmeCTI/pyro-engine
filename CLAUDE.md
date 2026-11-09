@@ -44,7 +44,8 @@ pytest tests/test_engine.py -v
 ### Camera API
 
 - Entry point: `pyro_camera_api/pyro_camera_api/main.py` (FastAPI + lifespan)
-- Camera adapters in `camera/adapters/`: `reolink.py`, `linovision.py`, `rtsp.py`, `url.py`, `mock.py` — all inherit from abstract bases in `camera/base.py`
+- Camera adapters in `camera/adapters/`: `reolink.py`, `linovision.py`, `onvif.py`, `rtsp.py`, `url.py`, `mock.py` — all inherit from abstract bases in `camera/base.py`
+- `onvif.py` (adapter `"onvif"` or `"hikvision-onvif"`): raw SOAP + WS-Security digest, no zeep. Lazy connect. Pose `p` maps to ONVIF preset token `str(p + preset_offset)` (default offset 1, Hikvision presets start at 1) or to an explicit `preset_tokens` list. Optional keys: `username`, `password`, `onvif_port`, `profile_token`, `snapshot_url`, `rtsp_path`. Field check: `scripts/onvif_ptz_check.py`.
 - `camera/registry.py` tracks live camera instances and background threads
 - Background patrol loops run in `camera/patrol.py`
 - Routes under `api/`: cameras, control (PTZ), focus, patrol, stream, health

@@ -12,6 +12,7 @@ from typing import Dict, Optional
 
 from pyro_camera_api.camera.adapters.linovision import LinovisionCamera
 from pyro_camera_api.camera.adapters.mock import MockCamera
+from pyro_camera_api.camera.adapters.onvif import OnvifCamera
 from pyro_camera_api.camera.adapters.reolink import ReolinkCamera
 from pyro_camera_api.camera.adapters.rtsp import RTSPCamera
 from pyro_camera_api.camera.adapters.url import URLCamera
@@ -58,6 +59,32 @@ def build_camera_object(key: str, conf: dict) -> Optional[BaseCamera]:
             focus_position=conf.get("focus_position"),
         )
         logger.info("Registered Reolink camera %s", key)
+        return cam
+
+    # Generic ONVIF cameras (checked before ISAPI so "hikvision-onvif" lands here)
+    if "onvif" in adapter:
+        cam = OnvifCamera(
+            camera_id=key,
+            ip_address=ip_addr,
+            username=conf.get("username", CAM_USER or ""),
+            password=conf.get("password", CAM_PWD or ""),
+            cam_type=cam_type,
+            cam_poses=conf.get("poses", []),
+            cam_azimuths=conf.get("azimuths", []),
+            port=conf.get("onvif_port", 80),
+            protocol=conf.get("protocol", "http"),
+            verify_tls=conf.get("verify_tls", False),
+            timeout=conf.get("timeout", 5.0),
+            profile_token=conf.get("profile_token"),
+            profile_index=conf.get("profile_index", 0),
+            preset_tokens=conf.get("preset_tokens"),
+            preset_offset=conf.get("preset_offset", 1),
+            snapshot_url=conf.get("snapshot_url"),
+            rewrite_xaddrs=conf.get("rewrite_xaddrs", True),
+            move_timeout_s=conf.get("move_timeout_s", 20.0),
+            focus_position=conf.get("focus_position"),
+        )
+        logger.info("Registered ONVIF camera %s", key)
         return cam
 
     # Linovision / ISAPI cameras
